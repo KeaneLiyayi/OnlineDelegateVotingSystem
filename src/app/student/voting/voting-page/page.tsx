@@ -1,0 +1,153 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BadgeCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Delegate {
+  _id: string;
+  fName: string;
+  department: string;
+  imageUrl: string;
+}
+
+interface Election {
+  _id: string;
+  name: string;
+  delegates: Delegate[];
+}
+
+export default function VotingPage() {
+  const { data: session, update } = useSession();
+  const [election, setElection] = useState<Election | null>(null);
+  const router = useRouter();
+  const [hasVoted, setHasVoted] = useState(false);
+  console.log(session)
+  
+
+  useEffect(() => {
+    const fetchElection = async () => {
+      const res = await fetch(`/api/elections?faculty=${session?.user?.faculty}&year=${session?.user?.year}`);
+      const data = await res.json();
+      const now = new Date();
+      const electionData = data[0];
+      const start = new Date(electionData.start);
+      const end = new Date(electionData.end);
+  
+      // Only allow if election is ongoing
+      if (now < start || now > end) {
+        setElection(null);
+        router.push("/student/voting/voting-closed");
+      } else {
+        setElection(electionData);
+      }
+    };
+    const checkVotingStatus = async () => {
+      const res = await fetch(`/api/student?studentId=${session?.user?.id}`);
+      const data = await res.json();
+      console.log(data)
+      setHasVoted(data)    }
+    checkVotingStatus();
+    
+  
+    if (session?.user) {
+      fetchElection();
+    }
+  }, [session?.user]);
+
+  
+  
+  console.log(election)
+
+  const handleVote = async (delegateId: string) => {
+    try {
+      const res = await fetch(`/api/vote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          electionId: election?._id,
+          delegateId,
+          studentId: session?.user?.id,
+        }),
+      });
+
+      const result = await res.json();
+      console.log(result)
+      
+        const updatedSession = await update({ user: { ...session.user, hasVoted: true } });
+        console.log("Updated Session:", updatedSession?.user); // Log the updated session
+      
+      
+      console.log(session?.user)
+      console.log("Vote submitted:", result);
+    } catch (error) {
+      console.error("Error voting:", error);
+    }
+  };
+
+  if (!election) {
+    return (
+      <div className="max-w-4xl mx-auto py-10 px-4">
+        <Skeleton className="h-8 w-64 mb-6 mx-auto" />
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="shadow-xl rounded-2xl animate-pulse">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <Skeleton className="w-24 h-24 rounded-full mb-4" />
+                <Skeleton className="h-4 w-32 mb-4" />
+                <Skeleton className="h-3 w-24 mb-4" />
+                <Skeleton className="h-10 w-32" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Skeleton className="h-10 w-32" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">{election.name}</h1>
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
+        {election.delegates.map((delegate) => (
+          <Card key={delegate._id} className="shadow-xl rounded-2xl">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <img
+                src={delegate.imageUrl}
+                alt={delegate.fName}
+                className="w-24 h-24 rounded-full object-cover border mb-4"
+              />
+              <h2 className="text-xl font-semibold">{delegate.fName}</h2>
+              <p className="text-sm text-gray-600 mb-4">{delegate.department}</p>
+              <Button
+  onClick={() => handleVote(delegate._id)}
+  className="flex gap-2 items-center bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+  disabled={hasVoted}
+>
+  <BadgeCheck className="w-4 h-4" />
+  {hasVoted ? "Already Voted" : "Vote"}
+</Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="text-center mt-8">
+    <Button
+      onClick={() => router.push(`/student/voting/results/${election._id}`)}
+      className="bg-green-600 hover:bg-green-700"
+    >
+      View Results
+    </Button>
+  </div>
+    </div>
+  );
+}
