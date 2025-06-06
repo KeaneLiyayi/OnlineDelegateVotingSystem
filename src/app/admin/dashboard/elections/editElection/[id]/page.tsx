@@ -9,6 +9,18 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+type Delegate = {
+    _id: string;
+    fName: string;
+    regNo: string;
+    faculty: string;
+    year: number;
+    department: string;
+};
+
+
+
+
 export default function EditElectionForm() {
   const params = useParams();
   const { id } = params;
@@ -23,7 +35,7 @@ export default function EditElectionForm() {
     delegates: [] as string[],
   });
 
-  const [delegateList, setDelegateList] = useState([]);
+  const [delegateList, setDelegateList] = useState<Delegate[]>([]);
 
   // Fetch election data
   useEffect(() => {
@@ -54,7 +66,7 @@ export default function EditElectionForm() {
         setDelegateList(data);
         setForm((prev) => ({
           ...prev,
-          delegates: data.map((delegate: any) => delegate._id),
+          delegates: data.map((delegate: Delegate) => delegate._id),
         }));
       };
       fetchDelegates();
@@ -86,7 +98,7 @@ export default function EditElectionForm() {
         year: Number(form.year),
       }),
     });
-    const result = await res.json();
+    
     if(res.ok){
         toast.success("Election updated successfully");
         router.push("/admin/dashboard/elections");

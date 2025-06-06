@@ -3,10 +3,15 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { CldUploadWidget } from "next-cloudinary";
+import Image from "next/image";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 
 export default function EditDelegateForm() {
     const params = useParams();
     const { id } = params;
+    const router = useRouter();
     const [form, setForm] = useState({
         fName: "",
         department: "",
@@ -50,8 +55,15 @@ export default function EditDelegateForm() {
                 body: JSON.stringify(data),
             });
             const result = await response.json();
-            console.log(result);
+            if (response.ok) {
+                toast.success("Delegate updated successfully");
+                router.push("/admin/dashboard/delegates");
+            } else {
+                toast.error('Error updating delegate');
+            }
+            
         } catch (error) {
+            toast.error('Error updating delegate');
             console.log(error);
         }
     };
@@ -59,7 +71,7 @@ export default function EditDelegateForm() {
     return (
         <div className="max-w-md mx-auto mt-8 p-6 border border-gray-300 rounded-lg shadow-sm bg-white">
             <h2 className="text-2xl font-semibold mb-4">Edit Delegate</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={(e) =>handleSubmit(e)} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-1" htmlFor="fName">
                         Full Name
@@ -148,7 +160,7 @@ export default function EditDelegateForm() {
                         </CldUploadWidget>
                     </div>
                     {form.imageUrl && (
-                        <img
+                        <Image
                             src={form.imageUrl}
                             alt="Uploaded"
                             className="mt-2 w-32 h-32 object-cover rounded-md"

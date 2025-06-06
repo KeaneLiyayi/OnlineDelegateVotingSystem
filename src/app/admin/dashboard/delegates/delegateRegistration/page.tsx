@@ -1,6 +1,5 @@
 "use client"
 import { useState } from "react";
-import UploadWidget from '@/components/upload';
 import { CldUploadWidget } from 'next-cloudinary';
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -16,9 +15,7 @@ const DelegateRegistrationForm = () => {
     const [loading, setLoading] = useState(false)
     const router = useRouter();
 
-    const handleUpload = (info) => {
-        setImageUrl(info.secure_url); // store the uploaded image URL
-    };
+    
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -40,7 +37,7 @@ const DelegateRegistrationForm = () => {
                 body: JSON.stringify(payload),
             });
 
-            const data = await response.json();
+            
             if (response.ok) {
                 toast.success("Delegate registered successfully");
                 router.push("/admin/dashboard/delegates");
@@ -48,6 +45,7 @@ const DelegateRegistrationForm = () => {
                 toast.error('Error submitting delegate');
             }
         } catch (error) {
+            console.log(error)
             toast.error('Network error');
         } finally {
             setLoading(false);

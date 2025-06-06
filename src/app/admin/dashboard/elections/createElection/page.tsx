@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-export default function createElection() {
+export default function CreateElection() {
     const router = useRouter();
     type Delegate = {
         _id: string;
@@ -21,7 +21,7 @@ export default function createElection() {
     const [faculty, setFaculty] = useState('');
     const [year, setYear] = useState<number | null>(null);
     const [electionName, setElectionName] = useState('');
-    const [status, setStatus] = useState('');
+    
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
     
@@ -57,7 +57,7 @@ export default function createElection() {
                 delegates: delegates.map((delegate) => delegate._id),
             }),
         });
-        const data = await res.json();
+        
         if(res.ok){
             toast.success("Election created successfully");
             router.push("/admin/dashboard/elections");
