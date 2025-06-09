@@ -1,10 +1,11 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck, Trophy } from "lucide-react";
+import {  Trophy } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 interface Delegate {
   _id: string;
   fName: string;
@@ -25,7 +26,7 @@ export default function ResultsPage() {
   const id =  params.id;
   const [result, setResult] = useState<Election | null>(null);
   const [loading,setLoading] = useState<boolean>(true)
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   
     useEffect(()=>{
         const fetchElection = async () => {
@@ -76,9 +77,11 @@ export default function ResultsPage() {
             }`}
           >
             <CardContent className="p-4 text-center flex flex-col items-center">
-              <img
+              <Image
                 src={delegate.imageUrl}
                 alt={delegate.fName}
+                width={100}
+                height={100}
                 className="w-24 h-24 rounded-full object-cover mb-3 border"
               />
               <h2 className="text-xl font-semibold">{delegate.fName}</h2>

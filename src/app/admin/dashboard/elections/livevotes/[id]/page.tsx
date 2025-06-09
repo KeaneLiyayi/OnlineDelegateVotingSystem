@@ -10,17 +10,29 @@ import {
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b"];
+type Delegate = {
+    _id: string;
+    fName: string;
+    regNo: string;
+    faculty: string;
+    year: number;
+    department: string;
+    imageUrl: string;
+    votes: number;
+};
 
 export default function LiveResultsPage() {
     const params = useParams()
     const {id} = params
-    const [delegates,setDelegates] = useState<any>([])
+    const [delegates,setDelegates] = useState<Delegate[]>([])
     const [loading,setLoading] = useState(true)
     const [endDate,setEndDate] = useState<string | null>(null)
     const [isElectionOver,setIsElectionOver] = useState(false);
@@ -41,14 +53,14 @@ useEffect(() => {
         const fetchDelegates = async () => {
             const res = await fetch(`/api/elections/${id}`);
             const dataResult = await res.json();
-            setDelegates(dataResult.delegates)
+            setDelegates(dataResult.delegates as Delegate[])
             console.log(dataResult)
             setEndDate(dataResult.end);
             setLoading(false)
             
         }
         fetchDelegates()
-    },[])
+    },[id])
     
     const handlePublish = async () => {
         try {
@@ -96,7 +108,7 @@ useEffect(() => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={delegates}
+                  data={delegates as Delegate[] }
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -107,7 +119,7 @@ useEffect(() => {
                     `${fName}: ${(percent * 100).toFixed(1)}%`
                   }
                 >
-                  {delegates.map((entry: any, index: any) => (
+                  {delegates.map((entry: Delegate, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -120,12 +132,14 @@ useEffect(() => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {delegates.map((delegate: any, idx: any) => (
+        {delegates.map((delegate: Delegate, idx: number) => (
           <Card key={idx} className="rounded-2xl shadow">
             <CardContent className="flex items-center space-x-4 p-4">
-              <img
-                src={delegate.imageUrl}
+              <Image
+                src={delegate.imageUrl || "/placeholder.png"}
                 alt={delegate.fName}
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-full object-cover"
               />
               <div>

@@ -16,6 +16,7 @@ export async function GET(_, { params }) {
 
         return NextResponse.json(candidate, { status: 200 });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: "Error fetching candidate" }, { status: 500 });
     }
 }
@@ -37,6 +38,7 @@ export async function PUT(request, { params }) {
 
         return NextResponse.json(updatedCandidate, { status: 200 });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: "Error updating candidate" }, { status: 500 });
     }
 }
@@ -55,6 +57,7 @@ export async function DELETE(_, { params }) {
 
         return NextResponse.json({ message: "Candidate deleted successfully" }, { status: 200 });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: "Error deleting candidate" }, { status: 500 });
     }
 }

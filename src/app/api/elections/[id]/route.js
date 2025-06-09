@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Election from "../../../../models/Election";
 import { connectToDB } from "../../../../lib/mongodb";
-import Delegate from "../../../../models/Delegate";
+
 
 export async function GET(_, { params }) {
     const { id } = await params;
@@ -15,7 +15,7 @@ export async function GET(_, { params }) {
 
         return NextResponse.json(election, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Error fetching election" }, { status: 500 });
+        return NextResponse.json({ error }, { status: 500 });
     }
 }
 
@@ -26,12 +26,12 @@ export async function DELETE(_, { params }) {
         const election = await Election.findByIdAndDelete(id);
 
         if (!election) {
-            return NextResponse.json({ error: "Election not found" }, { status: 404 });
+            return NextResponse.json({ error}, { status: 404 });
         }
 
         return NextResponse.json({ message: "Election deleted successfully" }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Error deleting election" }, { status: 500 });
+        return NextResponse.json({ error }, { status: 500 });
     }
 }
 
@@ -57,6 +57,7 @@ export async function PUT(request, { params }) {
 
         return NextResponse.json(election, { status: 200 });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: "Error updating election" }, { status: 500 });
     }
 }

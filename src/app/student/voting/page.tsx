@@ -8,17 +8,8 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface User {
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  faculty?: string;
-  year?: string;
-}
 
-interface Session {
-  user: User;
-}
+
 
 interface Election {
   _id: string;
@@ -85,7 +76,7 @@ if (!session?.user?.faculty || !session?.user?.year) {
 
 
   
-  const handleVote = (electionId: string) => {
+  const handleVote = () => {
     router.push(`/student/voting/voting-page`);
   };
 

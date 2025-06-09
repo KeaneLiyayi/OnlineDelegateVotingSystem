@@ -185,7 +185,7 @@ export default function EditElectionForm() {
                 <p className="text-sm text-muted-foreground">No qualified delegates found.</p>
               ) : (
                 <div className="max-h-64 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 pr-2">
-                  {delegateList.map((delegate: any) => (
+                  {delegateList.map((delegate: Delegate) => (
                     <Card key={delegate._id}>
                       <CardContent className="flex justify-between items-center py-2">
                         <div>

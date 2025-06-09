@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getElectionStatus(start: string, end: string): "upcoming" | "ongoing" | "ended" {
+export function getElectionStatus(start: Date, end: Date): "upcoming" | "ongoing" | "ended" {
   const now = new Date();
   const startDate = new Date(start);
   const endDate = new Date(end);

@@ -11,7 +11,7 @@ export default function VerifyOtpPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [otpSent, setOtpSent] = useState(false);
-  let email = session?.user?.email;
+  const email = session?.user?.email;
   console.log(email)
 
   useEffect(() => {
@@ -33,12 +33,12 @@ export default function VerifyOtpPage() {
 
       }else{
         setOtpSent(true)
-
+        toast.success("OTP has been sent")
       }
     };
     sendOtp();
     
-  }, [session]);
+  }, [session, otpSent,email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

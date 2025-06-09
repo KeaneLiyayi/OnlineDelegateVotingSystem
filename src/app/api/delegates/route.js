@@ -16,7 +16,7 @@ export async function POST(request) {
         return NextResponse.json({ message: "Delegate created successfully" }, { status: 201 });
 
     } catch (e) {
-        console.error('Error registering delegate:', e);
+        console.log('Error registering delegate:', e);
         return NextResponse.json({ error: 'Failed to register delegate' }, { status: 500 });
 
     }

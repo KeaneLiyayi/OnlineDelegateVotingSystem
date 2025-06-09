@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "../../../lib/mongodb";
 import Election from "../../../models/Election";
-import Delegate from "../../../models/Delegate";
 
 export async function POST(request) {
   await connectToDB();
