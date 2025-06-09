@@ -22,6 +22,7 @@ interface Election {
 
 export default function BeforeVotingPage() {
   const { data: session, status } = useSession();
+  const user = session?.user as { faculty?: string; year?: string };
 const router = useRouter();
 const [elections, setElections] = useState<Election[]>([]);
 const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ useEffect(() => {
     if (!session?.user) return;
 
     try {
-      const res = await fetch(`/api/elections?faculty=${session.user?.faculty}&year=${session.user?.year}`);
+      const res = await fetch(`/api/elections?faculty=${user.faculty}&year=${user.year}`);
       const data = await res.json();
       setElections(data);
     } catch (error) {
@@ -61,7 +62,7 @@ if (status === "loading") {
 }
 
 // If session is loaded but no user
-if (!session?.user?.faculty || !session?.user?.year) {
+if (!user.faculty || !user.year) {
   return (
     <div className="container mx-auto py-10">
       <Card className="mx-auto max-w-md">
@@ -142,7 +143,7 @@ if (!session?.user?.faculty || !session?.user?.year) {
                     {text}
                   </span>
                   <Button
-                    onClick={() => handleVote(election._id)}
+                    onClick={() => handleVote()}
                     disabled={status !== "ongoing"}
                     className={`${status !== "ongoing" ? "opacity-50 cursor-not-allowed" : ""}`}
                   >

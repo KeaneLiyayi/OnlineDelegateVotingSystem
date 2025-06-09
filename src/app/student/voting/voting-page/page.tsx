@@ -23,6 +23,7 @@ interface Election {
 
 export default function VotingPage() {
   const { data: session, update } = useSession();
+  const user = session?.user as { faculty?: string; year?: string; id?: string };
   const [election, setElection] = useState<Election | null>(null);
   const router = useRouter();
   const [hasVoted, setHasVoted] = useState(false);
@@ -31,7 +32,7 @@ export default function VotingPage() {
 
   useEffect(() => {
     const fetchElection = async () => {
-      const res = await fetch(`/api/elections?faculty=${session?.user?.faculty}&year=${session?.user?.year}`);
+      const res = await fetch(`/api/elections?faculty=${user.faculty}&year=${user.year}`);
       const data = await res.json();
       const now = new Date();
       const electionData = data[0];
@@ -47,7 +48,7 @@ export default function VotingPage() {
       }
     };
     const checkVotingStatus = async () => {
-      const res = await fetch(`/api/student?studentId=${session?.user?.id}`);
+      const res = await fetch(`/api/student?studentId=${user.id}`);
       const data = await res.json();
       console.log(data)
       setHasVoted(data)    }
@@ -57,7 +58,7 @@ export default function VotingPage() {
     if (session?.user) {
       fetchElection();
     }
-  }, [session?.user]);
+  }, [session?.user, router]);
 
   
   
@@ -73,18 +74,18 @@ export default function VotingPage() {
         body: JSON.stringify({
           electionId: election?._id,
           delegateId,
-          studentId: session?.user?.id,
+          studentId: user.id,
         }),
       });
 
       const result = await res.json();
       console.log(result)
       
-        const updatedSession = await update({ user: { ...session.user, hasVoted: true } });
+        const updatedSession = await update({ user: { ...user, hasVoted: true } });
         console.log("Updated Session:", updatedSession?.user); // Log the updated session
       
       
-      console.log(session?.user)
+      console.log(user)
       console.log("Vote submitted:", result);
     } catch (error) {
       console.error("Error voting:", error);

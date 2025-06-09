@@ -1,9 +1,25 @@
-// src/lib/authOptions.ts
-
-import { AuthOptions } from "next-auth";
+import { AuthOptions, User as NextAuthUser } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDB } from "@/lib/mongodb";
 import User from "@/models/User";
+
+interface ExtendedUser extends NextAuthUser {
+  _id: string;
+  faculty: string;
+  role: string;
+  year: number;
+  hasVoted: boolean;
+}
+
+interface ExtendedToken extends JWT {
+  id?: string;
+  
+  faculty?: string;
+  role?: string;
+  year?: number;
+  hasVoted?: boolean;
+}
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -15,6 +31,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         await connectToDB();
+
         const user = await User.findOne({
           $or: [
             { regNo: credentials?.identifier },
@@ -34,9 +51,15 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: JWT;
+      user?: any;
+    }) {
       if (user) {
-        token.id = user._id;
+        token.id = user._id?.toString?.() ?? user.id;
         token.email = user.email;
         token.faculty = user.faculty;
         token.role = user.role;
@@ -45,18 +68,19 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: ExtendedToken }) {
       session.user = {
         ...session.user,
-        id: token.id as string,
-        email: token.email as string,
-        faculty: token.faculty as string,
-        role: token.role as string,
-        year: token.year as number,
-        hasVoted: token.hasVoted as boolean,
+        id: token.id ?? "",
+        email: token.email ?? "",
+        faculty: token.faculty ?? "",
+        role: token.role ?? "",
+        year: token.year ?? 0,
+        hasVoted: token.hasVoted ?? false,
       };
       return session;
     }
+    
   },
   pages: {
     signIn: "/login"
