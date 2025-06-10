@@ -1,81 +1,117 @@
 "use client"
 
+import { useState } from "react"
+import { signIn } from "next-auth/react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { toast } from "sonner"
+import Image from "next/image"
 
-import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { toast } from "sonner";
-export default function Login() {
-    const [email, setEmail] = useState<string>("")
-    const [password, setPassword] = useState<string>("")
+export default function AdminLogin() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setErrors({})
+    let hasError = false
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const res = await signIn("credentials", {
-            redirect: false,
-            callbackUrl: "/admin/verifyOtp", // redirect after login
-            identifier: email,
-            password,
-
-        });
-        if  (res?.ok){
-            toast.success("Logged in! Redirecting...")
-            window.location.href = res?.url || "/admin/verifyOtp"
-        }else{
-            toast.error("Invalid registration number or password")
-        }
-
-
-
-
-
+    if (!email.trim()) {
+      setErrors(prev => ({ ...prev, email: "Email is required" }))
+      toast.error("Email is required")
+      hasError = true
     }
-    return (
-        <div className="container px-4 mx-auto">
-            <div className="max-w-lg mx-auto">
-                <div className="text-center mb-6">
-                    <h2 className="text-3xl md:text-4xl font-extrabold">Sign in</h2>
-                </div>
-                <form action="" onSubmit={handleSubmit}>
-                    <div className="mb-6">
-                        <label className="block mb-2 font-extrabold" htmlFor="email">Registration No</label>
-                        <input value={email} onChange={(e) => setEmail(e.target.value)}
-                            className="inline-block w-full p-4 leading-6 text-lg font-extrabold placeholder-indigo-900 bg-white shadow border-2 border-indigo-900 rounded"
+    if (!password) {
+      setErrors(prev => ({ ...prev, password: "Password is required" }))
+      toast.error("Password is required")
+      hasError = true
+    }
+    if (hasError) return
 
-                            id="email"
-                            placeholder="email"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block mb-2 font-extrabold" htmlFor="password">Password</label>
-                        <input value={password} onChange={(e) => setPassword(e.target.value)}
-                            className="inline-block w-full p-4 leading-6 text-lg font-extrabold placeholder-indigo-900 bg-white shadow border-2 border-indigo-900 rounded"
-                            type="password"
-                            id="password"
-                            placeholder="**********"
-                        />
-                    </div>
-                    <div className="flex flex-wrap -mx-4 mb-6 items-center justify-between">
-                        <div className="w-full lg:w-auto px-4 mb-4 lg:mb-0">
-                            <label htmlFor="remember">
-                                <input type="checkbox" id="remember" />
-                                <span className="ml-1 font-extrabold">Remember me</span>
-                            </label>
-                        </div>
-                        <div className="w-full lg:w-auto px-4">
-                            <a className="inline-block font-extrabold hover:underline" href="#">Forgot your password?</a>
-                        </div>
-                    </div>
-                    <button type="submit" className="inline-block w-full py-4 px-6 mb-6 text-center text-lg leading-6 text-white font-extrabold bg-indigo-800 hover:bg-indigo-900 border-3 border-indigo-900 shadow rounded transition duration-200">
-                        Sign in
-                    </button>
-                    <p className="text-center font-extrabold">
-                        Don’t have an account?{" "}
-                        <a className="text-red-500 hover:underline" href="#">Sign up</a>
-                    </p>
-                </form>
+    setLoading(true)
+    const res = await signIn("credentials", {
+      redirect: false,
+      callbackUrl: "/admin/verifyOtp",
+      identifier: email,
+      password,
+    })
+    setLoading(false)
+
+    if (res?.ok) {
+      toast.success("Logged in! Redirecting...")
+      window.location.href = res.url || "/admin/verifyOtp"
+    } else {
+      toast.error("Invalid email or password")
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-100 dark:bg-gray-900">
+      <Card className="w-full max-w-md shadow-2xl px-4">
+        <CardHeader>
+          <Image
+            src="/logo.png"
+            alt="UniVote Logo"
+            width={150}
+            height={150}
+            className="mb-2 mx-auto"
+            priority
+          />
+          <CardTitle className="text-xl font-bold text-center">
+            Sign In
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={errors.email ? "border-red-500" : ""}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
-        </div>
-    );
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={errors.password ? "border-red-500" : ""}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password}</p>
+              )}
+            </div>
+
+            <div className="text-right text-sm text-blue-600 hover:underline cursor-pointer">
+              Forgot password?
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }

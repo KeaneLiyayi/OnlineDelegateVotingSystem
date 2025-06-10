@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, User } from "lucide-react";
@@ -7,10 +8,19 @@ import { Shield, User } from "lucide-react";
 export default function Page() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 space-y-10 p-4">
-      <h1 className="text-3xl font-bold text-center">University Delegate Voting</h1>
+      
+      <Image
+        src="/logo.png"
+        alt="UniVote Logo"
+        width={250}
+        height={250}
+        className="mb-2"
+        priority
+      />
+
+      <h1 className="text-xl font-bold text-center my-4">University Delegate Voting System</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Student Card */}
         <Link href="/student" className="group">
           <Card className="w-80 h-64 flex flex-col justify-between cursor-pointer hover:shadow-lg transition">
             <CardHeader className="flex flex-col items-center space-y-4 pt-6">
@@ -23,7 +33,6 @@ export default function Page() {
           </Card>
         </Link>
 
-        {/* Admin Card */}
         <Link href="/admin" className="group">
           <Card className="w-80 h-64 flex flex-col justify-between cursor-pointer hover:shadow-lg transition">
             <CardHeader className="flex flex-col items-center space-y-4 pt-6">

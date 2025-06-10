@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "../../../lib/mongodb";
 import Election from "../../../models/Election";
+import Delegate from "../../../models/Delegate";
 
 export async function POST(request) {
   await connectToDB();
@@ -30,7 +31,7 @@ export async function POST(request) {
 
     return NextResponse.json(newElection, { status: 201 });
   } catch (e) {
-    console.error(e);
+    console.log(e);
     return NextResponse.json({ error: "Failed to create election" }, { status: 500 });
   }
 }

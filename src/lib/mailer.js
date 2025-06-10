@@ -25,3 +25,25 @@ export async function sendOTPEmail(email, otp) {
     throw new Error('Could not send OTP');
   }
 }
+export async function sendResultsEmail(recipients, electionName) {
+  try {
+    const response = await resend.emails.send({
+      from: 'no-reply@onlinedelegatevotingsystem.xyz',
+      to: recipients,
+      subject: `Results are out for ${electionName}`,
+      html: `
+        <div style="font-family:sans-serif;line-height:1.5;">
+          <h2>Election Results Ready</h2>
+          <p>The results for <strong>${electionName}</strong> are now available.</p>
+          <p>Log in to the voting portal to view them.</p>
+        </div>
+      `,
+    });
+
+    console.log('Results email sent:', response);
+  } catch (error) {
+    console.error('Failed to send results email:', error);
+    throw new Error('Could not send results email');
+  }
+}
+

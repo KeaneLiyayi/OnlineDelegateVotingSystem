@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Election from "../../../../models/Election";
 import { connectToDB } from "../../../../lib/mongodb";
+import Delegate from "../../../../models/Delegate";
 
 
 export async function GET(_, { params }) {

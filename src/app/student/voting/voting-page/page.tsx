@@ -120,34 +120,38 @@ export default function VotingPage() {
       <h1 className="text-3xl font-bold mb-6 text-center">{election.name}</h1>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
         {election.delegates.map((delegate) => (
-          <Card key={delegate._id} className="shadow-xl rounded-2xl">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <img
-                src={delegate.imageUrl}
-                alt={delegate.fName}
-                className="w-24 h-24 rounded-full object-cover border mb-4"
-              />
-              <h2 className="text-xl font-semibold">{delegate.fName}</h2>
-              <p className="text-sm text-gray-600 mb-4">{delegate.department}</p>
-              <Button
-  onClick={() => handleVote(delegate._id)}
-  className="flex gap-2 items-center bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
-  disabled={hasVoted}
->
-  <BadgeCheck className="w-4 h-4" />
-  {hasVoted ? "Already Voted" : "Vote"}
-</Button>
-            </CardContent>
-          </Card>
+          <Card key={delegate._id} className="rounded-2xl shadow-lg transition-transform hover:scale-[1.01]">
+          <CardContent className="p-6 flex flex-col items-center text-center">
+            <img
+              src={delegate.imageUrl}
+              alt={delegate.fName}
+              className="w-24 h-24 rounded-full border-2 border-gray-300 mb-4 object-cover"
+            />
+            <h2 className="text-lg font-medium">{delegate.fName}</h2>
+            <p className="text-sm text-gray-500 mb-4">{delegate.department}</p>
+            <Button
+              onClick={() => handleVote(delegate._id)}
+              disabled={hasVoted}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <BadgeCheck className="w-4 h-4" />
+              {hasVoted ? "Already Voted" : "Vote"}
+            </Button>
+          </CardContent>
+        </Card>
+        
         ))}
       </div>
       <div className="text-center mt-8">
-    <Button
-      onClick={() => router.push(`/student/voting/results/${election._id}`)}
-      className="bg-green-600 hover:bg-green-700"
-    >
-      View Results
-    </Button>
+      <div className="text-center mt-10">
+  <Button
+    onClick={() => router.push(`/student/voting/results/${election._id}`)}
+    className="bg-black hover:bg-black/80 px-6 py-2 rounded-xl"
+  >
+    View Results
+  </Button>
+</div>
+
   </div>
     </div>
   );

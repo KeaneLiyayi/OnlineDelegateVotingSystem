@@ -32,9 +32,11 @@ export default function BeforeVotingPage() {
       try {
         const res = await fetch(`/api/elections?faculty=${user.faculty}&year=${user.year}`);
         const data = await res.json();
+        console.log(data)
+        const electionData = data[0];
 
-        if (data && data._id) {
-          setElection(data);
+        if (electionData && electionData._id) {
+          setElection(electionData);
         } else {
           console.error("No election returned or invalid format:", data);
         }
@@ -128,9 +130,9 @@ export default function BeforeVotingPage() {
   const { status: electionStatus, text: statusText } = getElectionStatus(election.start, election.end);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container  mx-auto  md:w-1/2  py-10">
       <h1 className="text-3xl font-bold mb-6">Available Election</h1>
-      <Card key={election._id}>
+      <Card key={election._id} className=" mx-4">
         <CardHeader>
           <CardTitle>{election.name}</CardTitle>
         </CardHeader>

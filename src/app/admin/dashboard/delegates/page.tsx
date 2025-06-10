@@ -178,6 +178,7 @@ export default function DelegatePage() {
                     size="sm"
                     variant="destructive"
                     onClick={() => handleDeleteDelegate(delegate._id)}
+                    className="bg-black hover:bg-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

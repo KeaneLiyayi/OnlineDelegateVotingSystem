@@ -51,7 +51,7 @@ export default function Elections() {
 
   const handlePublish = async (electionId) => {
     try {
-      const res = await fetch(`/api/elections/${electionId}`, {
+      const res = await fetch(`/api/elections/${electionId}/results`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

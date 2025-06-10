@@ -12,30 +12,41 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { toast } from "sonner"
+import Image from "next/image"
 
 export default function Login() {
   const [regNo, setRegNo] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<{ regNo?: string; password?: string }>({})
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Validation
+    // Reset errors
+    setErrors({})
+    let hasError = false
+
     if (!regNo.trim()) {
+      setErrors(prev => ({ ...prev, regNo: "Registration number is required" }))
       toast.error("Registration number is required")
-      return
+      hasError = true
     }
     if (!password) {
+      setErrors(prev => ({ ...prev, password: "Password is required" }))
       toast.error("Password is required")
-      return
+      hasError = true
     }
+    if (hasError) return
 
+    setLoading(true)
     const res = await signIn("credentials", {
       redirect: false,
       callbackUrl: "/student/verifyotp",
       identifier: regNo,
       password,
     })
+    setLoading(false)
 
     if (res?.ok) {
       toast.success("Logged in! Redirecting...")
@@ -46,23 +57,35 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-md shadow-xl border border-indigo-500">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-100 dark:bg-gray-900">
+      <Card className="w-full max-w-md shadow-2xl px-4">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">
+          <Image
+            src="/logo.png"
+            alt="UniVote Logo"
+            width={150}
+            height={150}
+            className="mb-2 mx-auto"
+            priority
+          />
+          <CardTitle className="text-xl font-bold text-center">
             Sign In
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="regNo">Registration No</Label>
+              <Label htmlFor="regNo">Registration No / Email</Label>
               <Input
                 id="regNo"
                 placeholder="Enter your registration number"
                 value={regNo}
                 onChange={(e) => setRegNo(e.target.value)}
+                className={errors.regNo ? "border-red-500" : ""}
               />
+              {errors.regNo && (
+                <p className="text-sm text-red-500">{errors.regNo}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -73,18 +96,19 @@ export default function Login() {
                 placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={errors.password ? "border-red-500" : ""}
               />
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password}</p>
+              )}
             </div>
 
-            <div className="flex items-center text-sm">
-              <label className="flex items-center space-x-2">
-                <input type="checkbox" className="accent-indigo-600" />
-                <span>Remember me</span>
-              </label>
+            <div className="text-right text-sm text-blue-600 hover:underline cursor-pointer">
+              Forgot password?
             </div>
 
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
